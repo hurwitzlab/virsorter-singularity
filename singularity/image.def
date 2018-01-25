@@ -1,0 +1,42 @@
+BootStrap: docker
+From: ubuntu:latest
+
+%environment
+    PATH=/app/virsorter:$PATH
+
+%runscript
+    exec wrapper_phage_contigs_sorter_iPlant.pl
+
+%post
+    apt-get update
+    apt-get install -y locales wget git perl build-essential \
+        ncbi-blast+ hmmer mcl muscle
+    locale-gen en_US.UTF-8
+
+    cpan -i App::cpanminus
+
+    cd /usr/local/bin
+    wget http://metagene.nig.ac.jp/metagene/mga_x86_64.tar.gz
+    tar xvf mga_x86_64.tar.gz
+
+    #
+    # Put everything into $APP_DIR
+    #
+    export APP_DIR=/app
+    mkdir -p $APP_DIR
+    cd $APP_DIR
+
+    #
+    # Clone Fizkin 
+    #
+    cd $APP_DIR
+    git clone https://github.com/simroux/VirSorter.git virsorter
+    cd virsorter
+    cpanm --installdeps .
+
+    #
+    # Mount points for TACC directories
+    #
+    mkdir /home1
+    mkdir /scratch
+    mkdir /work
