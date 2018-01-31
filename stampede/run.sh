@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#module load tacc-singularity
+
 set -u
 
 FASTA=""
@@ -117,3 +119,7 @@ dos2unix "$INPUT"
 #
 echo "Finding circular DNA, calling genes"
 $SCRIPT_DIR/find_circular.py -f "$FASTA" -o "$FASTA_DIR" -g "$MIN_GENES_PER_CONTIG" -d "$DATASET"
+
+PRODIGAL_DIR="$OUT_DIR/prodigal"
+[[ ! -d "$PRODIGAL_DIR" ]] && mkdir -p "$PRODIGAL_DIR"
+prodigal -i "$INPUT" -a "$PRODIGAL_DIR/proteins.fa" -o "$PRODIGAL_DIR/prodigal.out"
